@@ -32,15 +32,6 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     }
 
 
-@auth_router.post("/hereee", status_code=status.HTTP_200_OK)
-async def testauth(user: user_dependency, db: db_dependency):
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication Failed")
-    return {
-        "User": user
-    }
-
-
 @auth_router.post("/signup", response_model=SignupModel, status_code=status.HTTP_201_CREATED)
 async def signup(db: db_dependency, user: SignupModel):
     db_email = db.query(User).filter(User.email == user.email).first()

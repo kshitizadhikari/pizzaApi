@@ -34,8 +34,9 @@ class Order(Base):
 
     __tablename__ = 'orders'
     id = Column(Integer, primary_key=True)
+    name = Column(String(80), nullable=False)
     quantity = Column(Integer, nullable=False)
-    order_status = Column(ChoiceType(choices=ORDER_STATUS, impl=String()), default='pending')
+    status = Column(ChoiceType(choices=ORDER_STATUS, impl=String()), default='pending')
     pizza_size = Column(ChoiceType(choices=PIZZA_SIZE, impl=String()), default='medium')
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship('User', back_populates='orders')

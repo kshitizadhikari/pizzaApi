@@ -38,17 +38,19 @@ class Token(BaseModel):
 
 class OrderModel(BaseModel):
     id: Optional[int] = None
+    name: str
     quantity: int
-    order_status: Optional[str] = 'pending'
-    pizza_size: Optional[str] = 'small'
+    status: Optional[str] = 'pending'
+    pizza_size: Optional[str] = 'medium'
     user_id: Optional[int] = None
 
     class Config:
         from_attributes = True
         json_schema_extra = {
             'example': {
+                "name": "test_order",
                 "quantity": 12,
-                "order_status": "pending",
+                "status": "pending",
                 "pizza_size": "small",
             }
         }
