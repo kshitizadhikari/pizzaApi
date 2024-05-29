@@ -1,10 +1,12 @@
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from starlette import status
+from mapper_functions import map_order_to_order_model
 
+import mapper_functions
 from database import Session
 from models import Order
 from schemas import OrderModel
@@ -46,14 +48,16 @@ def get_order(db: db_dependency, *, order_id: int, order_name: str):
     if db_order is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Invalid Order Details")
-    order_data = {
-        "id": db_order.id,
-        "name": db_order.name,
-        "quantity": db_order.quantity,
-        "status": db_order.status.code if db_order.status else None,
-        "pizza_size": db_order.pizza_size.code if db_order.pizza_size else None,
-        "user_id": db_order.user_id,
-    }
+    order = map_order_to_order_model(db_order)
+    return order
 
-    return OrderModel(**order_data)
 
+@order_router.get("get-all-orders", response_model=List[OrderModel])
+def get_all_orders(db: db_dependency):
+    db_orders = db.query(Order).all()
+    orders = List[OrderModel]
+    if not db_orders:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No orders found")
+
+    orders = [map_order_to_order_model(order) for order in db_orders]
+    return orders
